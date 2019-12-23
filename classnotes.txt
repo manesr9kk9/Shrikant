@@ -1,0 +1,591 @@
+
+
+	We need to complete some topics of OS 
+		So we are having this session
+
+
+OS ---
+	system software 
+	CLI  - terminal - SHELL -BASH 
+	System calls --- user mode to kernel mode , function calls
+				fork,getpid
+
+	process - program in execution 
+	pid
+	PCB ---  info abt process  --pid,state, location context
+	States in process life cycle
+		created, ready, running , waiting , terminate
+
+	IO instr a --- executed by DMA controller
+	cpu instr (A,L,R  executed by CPU)
+
+	Preemptive priority scheduling --- higher prio process
+		forces lower prio process to stop and it starts 	itself
+	
+	Starvation i prio scheduling   --- low priority never gets a chance to execute
+
+
+	RTOS   ---- deadline based
+	Multiuser OS  -- at a time many users can connect to system
+
+	Race condition --- many processes share data and get this problem 
+	Solution to race condition --- mutual exclusion
+	mutual exclusion is impl by SEMAPHORE
+	Process Synchronization --- using semaphore to control shared data access
+
+	Thread ---  path of execution in a process
+	difference between thread and process
+
+
+	pthread_create
+	pthread_join  -- calling thread is blocked till arg thread finishes
+	
+	fork --- child process
+	exec family of functions  
+		difference beteween fork and exec
+
+
+	external fragmentation  --- problem -- non consectuive memory cannot be used
+
+	PAGING  
+		use of page table } non consecutive allocation tracking
+
+	Segmentation --- non consecutive allocatinin variable partition
+	PAge replacement policies
+	Demand paging
+	Swap space
+	Virual memory
+
+
+______________________
+
+	IO and device management 
+
+Device  --  hardware 
+IO device --- input h/w or o/p h/w
+
+User-program- generates a io activity
+
+	scanf
+	printf
+
+	|
+	|
+	|
+The scanf call makes a read() system call
+printf call makes a write() system call
+	|
+	|
+  system call takes control to kernel
+	|
+	|
+	|
+   kernel transfers the call to a software module (DEVICE DRIVER )
+	|
+	|
+   Device driver converts the requests into s/w commands 
+	|
+	|s/w command
+      Device Controller [ keyboard controller, Disk controller ]
+	( understand s/w commands 
+			translates those commands to h/w signal)
+	|
+	|
+	|h/w signals
+     Device (kbd, hard disc, console )
+
+
+Two types of devices
+	charachter devices --- unit of read / write is a char
+		example -- Keyboard
+
+	Block devices --- unit of read / write is a block
+		example --- Hard disc
+
+
+Structure of hard disc 
+	Coaxial collection of disc
+	disc is coated with Fe 
+	every disc has a r/w head
+	
+	every disc is divided phyically into CONCENTRIC divisions
+		TRACKS
+
+	every Track is divided physically into sectors
+
+
+every sector is  LOGICALLY divided into BLOCKS 
+	1 block size = 2kb to 4kb 
+
+BLOCK on hard disk -------FRAMES in RAM 
+
+
+Hard disk  stores FILES 
+	all data in files is stored as bits using Some encoding
+		like UTF , ASCII 
+
+	File is a Logical structure
+		is a collection of Blocks
+	File has a set of properties and functions
+
+
+	Properties of File ---name, ext, timestamp, permissions
+				user 
+
+	functions on file --- open,close, read, write, copy ,rename, move,delete 
+
+	open a file 
+	close a file 
+
+
+Why should you close a file ?
+Why should you flush  a file ?
+
+	Block Allocation Techniques 
+
+Blocks are allocated to a file when it is created or when it grows.
+
+Kernel maintains 2 list of blocks
+	Allocated List 1,2,3,4,10,11,12,13
+	Free List  5,6,7,8,9,,14-20 
+
+1. Contiguous Block allocation technique
+	Lets say my file needs 4 blocks
+		allocate 4 contiguous free blocks
+
+	Adv -
+	 ACCESS - Sequential access easy
+		  Random access easy
+
+	disadv 
+		external fragmentation
+		internal fragementation
+		file grows - then relocate it to bigger contiguous 			space
+
+
+	Directory Entry of the file
+	filename	start block 	total-blocks
+	  star.txt		5	  4
+---------------------------------------------------------------
+2. Linked Block allocation technique - every block is split into two parts --- data + next-block-number
+
+	Lets say my file needs 4 blocks
+		allocate 4  free blocks } they may be non contiguous
+
+	Adv - NO external fragmentation
+		file grows - then allocate any free blocks and add its number to last block
+
+	 ACCESS - Sequential access easy
+		 
+
+	disadv  - additional tracking of non consecutive blocks
+		each block is not fully used due to 		
+		next-blockinumber
+		
+		internal fragementation
+		 Random access is difficult
+
+
+Directory Entry of the file
+	filename	start block 	
+	  star.txt		5	  
+
+
+
+	-----------------------------
+3. INDEXED  Block allocation technique - A special block called as index block is reserved to store block numbers
+
+	Lets say my file needs 4 blocks
+		allocate 4  free blocks } they may be non contiguous
+	allocate a index block that will have numbers of data blocks
+
+
+
+	Adv - NO external fragmentation
+		file grows - then allocate any free blocks and add its number to index block
+
+	 ACCESS - Sequential access easy
+		 Random access is difficult
+		 
+
+	disadv  - index block must be securely maintained
+		
+		internal fragementation
+		
+			
+
+Directory Entry of the file
+	filename	Index block 	
+	  star.txt		100	  
+
+_____________________________________________________________
+
+	File System ---- it is a way to organize 
+				store
+			and retrieve FILES on a PARTITION 
+
+
+FAT32 FAT64 } windows and DOS based FS 
+ext2/ext3/ext4 } Linux based FS
+NTFS } network OS FS
+...
+...
+... }CD Drive 
+... }PD
+
+
+How to LAYOUT FS on a partition --- FORMATTING the partition
+
+block bitmap } allocation status of DATA BLOCKS 
+
+1 F
+2 F
+3 A
+4 F
+5 F
+6 A
+7 A
+8 A
+9 A
+10 A
+
+to store allocation of 10 blocks i need 10 bytes = 80 bits
+
+
+BITMAP -- less memory storage technique
+1101100000 } 10 bits store allocation of 10 blocks
+
+
+
+Every File gets an Inode  in linux 
+Every directory gets an INODE
+
+Inode 
+_________________
+	filename
+	size
+	ext
+	permissions
+	user
+	timestamps
+
+
+	Direct block Entry
+	Indirectblock Entry
+	Double block Entry
+_______________________
+
+Inode bitmap --- bitmap for inodes --allocation track
+__________________
+Inode table
+	list of actual inodes
+
+Group descriptor ---
+	how many total free blocks
+		total free inodes
+		total allocated blocks 
+	
+_____________________________
+Linux uses VFS --- Virtual File System
+
+	User (use linux commands to access all FSs )
+	 |
+	VFS
+	 |
+    FS1,FS2,FS3
+______________________________________________
+	
+ls -i 
+
+cp -- create a new inode
+mv -- keep the same inode
+
+
+ln } link command
+2 types of links
+	soft link = symbolik link = shortcut
+	hard link 
+
+_______________________________________________________
+
+for loop 
+
+
+Positional parameters in shell script 
+
+_________________________________________________
+
+Initialization files 
+	~  }    .bashrc
+		.bash_history
+
+_________________________________________________
+
+	Disc Scheduling algorithms 
+
+Seek time -- time to locate r/w head on the track
+
+Rotational Latency Time --- time to rotate disc and move the sector under r/w head
+
+
+WAIT TIME = seek time + rotational latency time
+to reduce wait time ====== reduce seek time
+
+to reduce seek time rearrange the requests
+
+1. FCFS ---dont rearrange the first come will be served first
+
+2. SSTF = Shortest seek time first --- 
+		request for nearby tracks are handled first
+		Starvation may occur
+
+3. SCAN  = visit every track and handle requestson that track
+
+	1----2---3---4---5 } track numbers
+
+    CSCAN 
+	1---2---3---4---5 ---1---2---3---4---5---1
+
+ SCAN Lookahead
+	1---2---3
+	if no request of 4 and 5 track then return
+
+	
+
+	prachi_godbole@psgapune.com 
+
+	PRudent Software and grooming academy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
